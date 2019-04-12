@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/nlopes/slack"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/cmd", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/wiki", func(w http.ResponseWriter, r *http.Request) {
 		base_url := "https://ja.wikipedia.org/wiki/"
 
 		s, err := slack.SlashCommandParse(r)
@@ -25,7 +26,13 @@ func main() {
 		switch s.Command {
 		case "/wiki":
 			response := &slack.Msg{Text: base_url + s.Text, ResponseType: "in_channel"}
-			print(response)
+			resUrl, err := json.Marshal(response)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			w.Write(resUrl)
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			return
