@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/nlopes/slack"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -26,9 +26,10 @@ func main() {
 
 		switch s.Command {
 		case "/wiki":
-			reqEnc := base64.StdEncoding.EncodeToString([]byte(s.Text))
+			//reqEnc := base64.StdEncoding.EncodeToString([]byte(s.Text))
+			reqEnc := url.PathEscape(s.Text)
 
-			response := &slack.Msg{Text: base_url + , ResponseType: "in_channel"}
+			response := &slack.Msg{Text: base_url + reqEnc, ResponseType: "in_channel"}
 			resUrl, err := json.Marshal(response)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
